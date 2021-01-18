@@ -1,4 +1,4 @@
-from data_gen import data_gen
+import data_gen
 from make_model import make_model
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau 
 
@@ -18,10 +18,11 @@ callbacks = [earlystop, lear_rate_reduc]
 model = make_model()
 
 def train_model(model):
-	history = model.train(data_gen(),
-                          epochs=NUM_EPOCHS,
-                          validation_data=validation_gen(),
-                          validation_steps=TOTAL_VALIDATE // (BATCH_SIZE),
-                          steps_per_epoch=TOTAL_TRAIN // (BATCH_SIZE),
-                          callbacks=callbacks)
-	model.save('models/model.h5')
+  history = model.fit(data_gen.generator(),
+              #validation_data=generator(),
+              steps_per_epoch=50,
+              epochs=50)
+  model.save('models/model_0.h5')
+
+if __name__ == "__main__":
+  train_model(model)
