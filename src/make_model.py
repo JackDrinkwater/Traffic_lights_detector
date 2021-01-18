@@ -1,9 +1,11 @@
 import numpy as np
 import pandas as pd 
-from tensorflow.keras.losses import binary_crossentropy, GUoILoss
+from tensorflow.keras.losses import binary_crossentropy, mse
 from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense, Activation, BatchNormalization, GlobalAveragePooling2D, Input
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense, Activation, BatchNormalization, GlobalAveragePooling2D, Input, Concatenate
 from tensorflow.keras.metrics import TruePositives, FalsePositives, FalseNegatives
+from tensorflow.keras.optimizers import Adam
+import tensorflow as tf
 
 IMG_HEIGHT = 64
 IMG_WIDTH = 64
@@ -11,33 +13,38 @@ IMG_CHANNELS = 3
 
 
 def custom_loss(y_true, y_pred):
-    class_loss = binary_crossentropy(y_true[:,:-1], y_pred[:, :-1])
+    y_true = tf.reshape(y_true, [1, 5])
+    y_pred = tf.reshape(y_pred, [1, 5])
+
+    class_loss = binary_crossentropy(y_true[:, 0], y_pred[:, 0])
     # need make Euclidian distance loss here
-    reg_loss = GUoILoss(y_true[:, -1], y_pred[:, -1])
+    reg_loss = mse(y_true[:, 1:5], y_pred[:, 1:5])
     
     return class_loss * y_true[:, -1] + 2 * reg_loss
 
 def make_model():
     input_layer = Input(shape=[IMG_HEIGHT, IMG_WIDTH, IMG_CHANNELS])
 
-    layer_1 = Conv2D(32, (3, 3), activation='relu')(input_layer)
+    x = Conv2D(32, (3, 3), activation='relu')(input_layer)
 
-    layer_2 = Conv2D(32, (3, 3), activation='relu')(layer_1)
-    layer_2 = MaxPooling2D(pool_size=(2, 2))(layer_2)
+    x = Conv2D(32, (3, 3), activation='relu')(x)
+    x = MaxPooling2D(pool_size=(2, 2))(x)
 
     
-    layer_3 = Conv2D(64, (3, 3), activation='relu')(layer_2)
-    layer_3 = MaxPooling2D(pool_size=(2, 2))(layer_3)
+    x = Conv2D(64, (3, 3), activation='relu')(x)
+    x = MaxPooling2D(pool_size=(2, 2))(x)
     
-    layer_4 = Flatten()(layer_3)
-    layer_4 = Dense(1000, activation='relu')(layer_4)
+    x = Flatten()(x)
+    x = Dense(1000, activation='relu')(x)
     
-    layer_5 = Dense(200, activation='relu')(layer_4)
+    x = Dense(200, activation='relu')(x)
     
-    out_1 = Dense(1, activation='sigmoid')(layer_4)
-    out_2 = Dense(4, activation='linear')(layer_4)
+    out_1 = Dense(1, activation='sigmoid')(x)
+    out_2 = Dense(4, activation='linear')(x)
+
+    output_layer = Concatenate()([out_1, out_2])
     
-    model = Model(inputs=input_layer, outputs=[out_1,out_2])
-    model.compile(optimizer = "rmsprop", loss = custom_loss)
+    model = Model(input_layer, output_layer)
+    model.compile(optimizer = Adam(learning_rate=0.0001), loss = custom_loss)
     
     return model
