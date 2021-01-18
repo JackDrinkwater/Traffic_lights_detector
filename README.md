@@ -2,7 +2,7 @@
 
 # 0. Annotation 
 
-This repository is declared to realizing the method of traffic lights detecting which is performed in this [article]. Described method based on only vision system that is often attampted to be implemented in autonomous driving systems and advanced driver-assistance systems. Such systems use only input images from a camera and no other sensors like radar or lidar. One of important tasks for sush system is locacalization of traffic lights and then understanding them for making a choice by,for example, autonomous vehicle. 
+This repository is declared to realizing the method of traffic lights detecting which is performed in this [article](https://ieeexplore.ieee.org/document/9109411). Described method based on only vision system that is often attampted to be implemented in autonomous driving systems and advanced driver-assistance systems. Such systems use only input images from a camera and no other sensors like radar or lidar. One of important tasks for sush system is locacalization of traffic lights and then understanding them for making a choice by, for example, autonomous vehicle. 
 
 The repository implements the approach, proposed by authors of the article, of a traffic light recognition system "where adaptive thresholding and deep learning are used for region proposal and traffic light localization, respectively". The LISA open-source dataset is used along with custom augmentation methods in order to increase the number of available data samples. Authors declare that "the classification part of the algorithm gives a total of 89.60% true detection rate, while the regression part of the model produced a correct location of the traffic light in 92.67% of cases".
 
@@ -14,7 +14,8 @@ Data can be loaded [here](https://www.kaggle.com/mbornoe/lisa-traffic-light-data
 Examples of a day and a night frame:
 </p>
 
-<img src="https://github.com/JackDrinkwater/Traffic_lights_detector/blob/main/pics/dayClip5--00005.jpg" width="450" height="300"> <img src="https://github.com/JackDrinkwater/Traffic_lights_detector/blob/main/pics/nightClip5--00005.jpg" width="450" height="300">
+![img](https://github.com/JackDrinkwater/Traffic_lights_detector/blob/main/pics/dayClip5--00005.jpg) 
+![img](https://github.com/JackDrinkwater/Traffic_lights_detector/blob/main/pics/nightClip5--00005.jpg)
 
 The annotations are stored as 1 annotation per line with the addition of information such as class tag and file path to individual image files. With this structure the annotations are stored in a csv file.
 
