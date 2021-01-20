@@ -18,11 +18,10 @@ callbacks = [earlystop, lear_rate_reduc]
 model = make_model()
 
 def train_model(model):
-  history = model.fit(data_gen.generator(),
-              #validation_data=generator(),
-              steps_per_epoch=50,
-              epochs=50)
-  model.save('models/model_0.h5')
+    history = model.fit(data_gen.generator(),
+                        steps_per_epoch=50,
+                        epochs=50)
+        model.save('models/model_0.h5')
 
 if __name__ == "__main__":
-  train_model(model)
+    train_model(model)
