@@ -19,23 +19,23 @@ def generator(batch_size=50):
 
                 if day_or_night == 0: 
                     folder_day = random.randint(1,13)
-                    path_0 = '/Users/stanislav/Downloads/archive/Annotations/Annotations/dayTrain/dayClip{}/frameAnnotationsBOX.csv'.format(folder_day)
+                    path_0 = '/../data/archive/Annotations/Annotations/dayTrain/dayClip{}/frameAnnotationsBOX.csv'.format(folder_day)
                     csv_file = pd.read_csv(filepath_or_buffer=path_0, sep=';')
 
                 else:
                     folder_night = random.randint(1,5)
-                    path_0 = '/Users/stanislav/Downloads/archive/Annotations/Annotations/nightTrain/nightClip{}/frameAnnotationsBOX.csv'.format(folder_night)
+                    path_0 = '/../data/archive/Annotations/Annotations/nightTrain/nightClip{}/frameAnnotationsBOX.csv'.format(folder_night)
                     csv_file = pd.read_csv(filepath_or_buffer=path_0, sep=';')
 
                 # choose picture 
-                i = random.randint(0, len(csv_file.iloc[:,0].unique())-1)# choose random number of picture in folder
-                full_pic_name = csv_file.iloc[:,0].unique()[i] # with index above choose full name picture 
-                pic_name = csv_file.iloc[:,0].unique()[i].split('/')[1] # with index above choose picture 
+                i = random.randint(0, len(csv_file.iloc[:,0].unique())-1) # choose random number of picture in folder
+                full_pic_name = csv_file.iloc[:,0].unique()[i]            # with index above choose full name picture 
+                pic_name = csv_file.iloc[:,0].unique()[i].split('/')[1]   # with index above choose picture 
 
                 if day_or_night == 0:
-                    path_to_img = '/Users/stanislav/Downloads/archive/dayTrain/dayTrain/dayClip{}/frames/'.format(folder_day) + pic_name
+                    path_to_img = '/../data/archive/dayTrain/dayTrain/dayClip{}/frames/'.format(folder_day) + pic_name
                 else:
-                    path_to_img = '/Users/stanislav/Downloads/archive/nightTrain/nightTrain/nightClip{}/frames/'.format(folder_night) + pic_name
+                    path_to_img = '/../data/archive/nightTrain/nightTrain/nightClip{}/frames/'.format(folder_night) + pic_name
 
                 img = cv.imread(path_to_img)
                 img = cv.cvtColor(img, cv.COLOR_BGR2RGB)
@@ -49,8 +49,7 @@ def generator(batch_size=50):
                 params.minThreshold = 1
                 params.maxThreshold = 255
                 params.filterByArea = True
-                params.minArea = 100 # for day it was 300
-                #params.maxArea = 1500
+                params.minArea = 100 
                 params.filterByCircularity = False
                 params.filterByConvexity = False
                 params.filterByInertia = False
@@ -59,14 +58,9 @@ def generator(batch_size=50):
                 keypoints = detector.detect(img)
 
                 kps = np.array([key for key in keypoints])
-                #print(kps)
-
-                #im_with_keypoints = cv.drawKeypoints(img, keypoints, np.array([]), (0, 0, 255), cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-                
 
                 for i in range(number_of_same_pic):
                     if count < 100:
-                        #appear = True
                         # coors of box
                         x1 = csv_file[csv_file.iloc[:,0] == full_pic_name].iloc[i,2]+200
                         y1 = csv_file[csv_file.iloc[:,0] == full_pic_name].iloc[i,3]+200
@@ -104,19 +98,13 @@ def generator(batch_size=50):
                         cropped_img = cropped_img.reshape(1, 64, 64, 3)
                         box = np.array([1, x1, y1, x2, y2], dtype=dt)
                         
-                        #image_rect = cv.rectangle(cropped_img, (x1,y1), (x2,y2), (0,255,0), 1)
-                        
                         Xs.append(np.array(cropped_img, dtype=dt) / 255.), Ys.append(box)
-                        #box = box.reshape(5, 1)
                         
                         count += 1
-                                                        
-                        #plt.imshow(image_rect)
-                        #plt.show()
+
                 keypoints = keypoints[-5:-1]
                 for k in range(len(keypoints)):
                     if count < 100:
-                        #appear = False
                         k_x1 = int(round(keypoints[k].pt[0]-100))
                         k_y1 = int(round(keypoints[k].pt[1]-100))
                         k_x2 = int(round(keypoints[k].pt[0]+100))
@@ -125,12 +113,7 @@ def generator(batch_size=50):
                         cropped_img = img[k_y1:k_y2, k_x1:k_x2]
                         cropped_img = cv.resize(cropped_img, (64, 64))
                         cropped_img = cropped_img.reshape(1, 64, 64, 3)
-
                         box = np.array([0, 0, 0, 0, 0], dtype=dt)
-                        #box = box.reshape(5, 1)
-                                                        
-                        #plt.imshow(cropped_img)
-                        #plt.show()
 
                         Xs.append(np.array(cropped_img, dtype=dt) / 255.), Ys.append(box)
 
